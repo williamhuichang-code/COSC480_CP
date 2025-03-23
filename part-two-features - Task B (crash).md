@@ -81,11 +81,13 @@ Replace me with an outline of:
 - how you implemented this feature
 - choices you made and why
 
+
 ## 4. Add all years: Crash Severity Report
 Replace me with an outline of:
 
 - how you implemented this feature
 - choices you made and why
+
 
 ## 5. Implement Crash Reports Over Time Graph
 Replace me with an outline of:
