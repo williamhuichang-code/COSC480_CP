@@ -8,6 +8,7 @@ visualize data for ill-specified, complex data-science problems.
 import pandas as pd
 import time
 from typing import Callable, List, Union
+import random
 
 # shorten data for test
 # DATA_FILE = r"D:\DS\Py code\Crash_Analysis_System_(CAS)_data_shorten.csv"
@@ -33,8 +34,27 @@ def the_loopfather(func: Callable, data: pd.DataFrame) -> None:
     user_stays = "yes by default"
     while user_stays != "no":
         func(data)
-        user_stays = cleaned_text_input(input("Press 'Enter' to continue, type 'no' to leave: "))
+        user_stays = cleaned_text_input(input(rand_msg("leave prompt")))
     print("Goodbye!")
+
+
+def rand_msg(msg_variant: str) -> str:
+    """ I'm just bored. """
+    input_prompts = [
+    "Go ahead, type your choice: ",
+    "Your turn! Write something? ",
+    "Make your pick and hit Enter: "
+    ]
+    leave_prompts = [
+    "Press Enter to continue exploring, \nor type 'no' to exit the loop: ",
+    "Still in the zone? Hit Enter to keep going, \nor 'no' to break free: ",
+    "Ready for another round? Just press Enter, \nor type 'no' to stop: "
+    ]
+    if msg_variant == "input prompt":
+        return random.choice(input_prompts)
+    elif msg_variant == "leave prompt":
+        return random.choice(leave_prompts)
+
 
 
 def cleaned_text_input(user_input: str) -> str:
