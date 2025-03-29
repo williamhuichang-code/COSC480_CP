@@ -5,12 +5,21 @@ Please fill in the section for each feature, replace all text below each heading
 
 ## 1. Validate user input: Crash Severity Report
 **How I Implemented This Feature**
-- I added a validation system to ensure the user selects a valid crashYear and effectiveSpeedLimit. I used the validated_crash_selection() function to repeatedly prompt the user until they enter a valid input. This function uses a helper, is_crash_input_valid(), which checks whether the user input is numeric and falls within the allowed values. It also cleans the input using cleaned_numeric_input() to handle spaces, floats like " 3.0", and other edge cases.
+[week17032025]
+- I used a function `validated_crash_selection()` along with `is_crash_input_valid()` to validate year and speed limit based on open-ended numeric comparison with constraint lists.
+[week24032025_Improvement]
+- This week, I generalised and restructured validation into a more reusable form. I introduced:
+  - A central input gateway `user_value_in_list()` that validates if user input is inside a list of allowed values.
+  - Modular formatting functions (e.g., `general_format`, `case_sensitive_format`) to standardize both user inputs and reference values before comparing.
+  - The `is_numeric()` function was also rewritten to use `int(float(...))`, catching strings like `" 7.0 "` while rejecting `"nan"` or invalid values — and reused across all numeric entry points.
+- Menu option selection now uses `user_value_in_list()` and `list_index_as_strings()` for cleaner control and better error handling, improving on last week's more rigid `validated_index_choice()`.
+
 **The Coding Choices I Made and Why**
-- Custom numeric check: Instead of using .isnumeric(), I created an is_numeric() function to handle floating-point values, catch NaN, and avoid crashes from unexpected strings.
-- Constraint-based validation: I compared the cleaned user input against a list of valid choices (crashYear and effectiveSpeedLimit) to prevent out-of-range or invalid selections.
-- User-friendly retry loop: If input is invalid, the user sees an error message and is prompted again, improving usability and reducing runtime errors.
-- Whitespace + case handling: All inputs are cleaned using cleaned_text_input() to tolerate common formatting mistakes, making the system more robust.
+- Modular Validation: Rather than writing separate input loops for every feature, I abstracted them into a `user_value_in_list()` system. This made validation scalable across both menu options and data filters.
+- Flexible Formatting: I introduced three types of formatters — `general_format`, `case_sensitive_format`, and `raw_format` — and passed them into all I/O-related functions. This lets me fine-tune validation contextually, such as case-insensitive search vs. exact column names.
+- Message Randomization: I centralized all user-facing prompts into the `rand_msg()` function. This makes feedback more lively and also helps separate logic from UI.
+- Guard Functions: I added a guard `df_not_loaded()` to make sure users can’t access features before loading data — solving a usability issue from the earlier version.
+
 **my thoughts for universal validation problems**
 - The course material suggests using the .isnumeric() method to validate if user input is numeric. However, I find this approach insufficient, as it does not handle all potential edge cases effectively. Since user input must be converted into a numeric form, several issues arise:
 (1) Floating Point Handling:
@@ -52,20 +61,22 @@ c> for closed-ended universal validation
         - float('nan') acts as an "unknown" placeholder, which is ideal for comparison — because in Python, float('nan') != float('nan'), making it easy to detect mismatches.
 - This part c hasn't been implemented yet, but I think it's a very good approach once I have time.
 
-
 ## 2. Use temporary speed limit if defined instead of normal speed limit
 **How I Implemented This Feature**
 - To implement this feature, I introduced a new column in the crash_dataframe called effectiveSpeedLimit. This column selects the temporarySpeedLimit value if it is defined (i.e., numeric); otherwise, it defaults to the speedLimit value.
 - I achieved this using the apply() function with a lambda expression that checks each row. The logic is:
 
+```python
 crash_dataframe["effectiveSpeedLimit"] = crash_dataframe.apply(
     lambda row: row["temporarySpeedLimit"] if is_numeric(row["temporarySpeedLimit"]) else row["speedLimit"],
     axis=1
 )
+``` 
 
 - The rest of the report then uses effectiveSpeedLimit instead of speedLimit, so that any logic or filtering automatically respects temporary overrides.
 
 **The Coding Choices I Made and Why**
+[week17032025]
 - Use of apply() with lambda:
     - I chose to use apply() with a row-wise lambda to easily access and compare temporarySpeedLimit and speedLimit within each row. This avoids the need for more verbose for loops or multiple passes through the DataFrame.
 - Check for numeric with is_numeric():
@@ -74,6 +85,8 @@ crash_dataframe["effectiveSpeedLimit"] = crash_dataframe.apply(
     - Creating a new column instead of overwriting the original speedLimit maintains data integrity and keeps the logic clear. It also helps with debugging and any future changes, as the original values are preserved.
 - Seamless integration with existing logic:
     - By simply replacing usage of speedLimit with effectiveSpeedLimit in downstream code, the change was minimally invasive and required no major reworking of existing functions like print_crash_severity_report().
+[week24032025_Improvement]
+- This part is still in the process of rewriting.
 
 ## 3. Warn the user if no records are found  
 Replace me with an outline of:
@@ -90,7 +103,5 @@ Replace me with an outline of:
 
 
 ## 5. Implement Crash Reports Over Time Graph
-Replace me with an outline of:
-
-- how you implemented this feature
-- choices you made and why
+[week24032025_Improvement]
+- This feature is partially in progress.
