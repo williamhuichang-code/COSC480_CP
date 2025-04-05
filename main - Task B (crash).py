@@ -251,6 +251,7 @@ def plot_crashes_over_time(df: pd.DataFrame, \
     plt.show()
 
 
+
 def plot_multi_line():
     """ Plots a multi line graph based on given df and conditions. """
     pass
@@ -282,16 +283,16 @@ def main() -> None:
                     continue
                 print("under construction~")
                 # the_loopfather(print_crash_severity_report, raw_df, general_format)
+                print("under construction~")
+                # the_loopfather(print_crash_severity_report, raw_df, general_format)
             case "all years: Crash Severity Report":
                 if df_not_loaded(raw_df):
                     continue
-                print("under construction~")
-                # the_loopfather(print_all_year_crash_report, raw_df, general_format)
+                
             case "Crash Reports Over Time Graph":
                 if df_not_loaded(raw_df):
                     continue
                 # the_loopfather(plot_crashes_over_time, raw_df, general_format)
-                # still in progress
                 crash_years = [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2015, 2014, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
                 start_of_interest = 2000
                 end_of_interest = 2015
