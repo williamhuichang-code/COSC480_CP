@@ -7,8 +7,8 @@
 import pandas as pd_menu
 import random as rd_menu
 from clean_input_module import CleanInput
+from config_module import DIVIDER
 
-DIVIDER = "-" * 65
 
 class Menu():
     """ Displays itself, prompts input and returns validated selection. """

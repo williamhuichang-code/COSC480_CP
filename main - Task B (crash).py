@@ -45,11 +45,13 @@ def test_invalid_year_speed_input():
 # feature 2, crash report with temporarySpeedLimit done
 def crash_report():
     #  report <- df %>% mutate %>% select %>% filter %>% group_by %>% summurize
+    # "index == index" for all condition in query()
+    # "crashSeverity in ['Non-Injury Crash', 'Fatal Crash']" for multiple levels count
     report = df \
     .assign(effectiveSpeedLimit = 
             lambda df: df['temporarySpeedLimit'].combine_first(df['speedLimit'])) \
     .loc[:, ['crashSeverity', 'crashYear', 'effectiveSpeedLimit']] \
-    .query("crashSeverity in ['Non-Injury Crash', 'Fatal Crash']") \
+    .query("index == index") \
     .groupby('crashSeverity') \
     .size() \
     .reset_index(name='count') \
