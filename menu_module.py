@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This module is designed to clean user's input in general.
    Author: William Hui Chang
    Date: Wed Apr  9 00:38:19 2025
@@ -37,26 +36,34 @@ class Menu():
         """ Universal prompt for input. """
         self.response = CleanInput(input(self.rand_msg("input prompt"))).general_style()
         return self
-    def silence_prompt(self):
-        """ Universal prompt for input. """
-        self.response = CleanInput(input()).general_style()
+    def custom_prompt(self, custom_words):
+        """ Ask for input with custom prompt words. """
+        self.response = CleanInput(input(custom_words)).general_style()
+        return self
+    def split_prompt(self):
+        self.response = CleanInput(input(self.rand_msg("input prompt"))).split_style()
         return self
     # step 3, validate input and return selection
     def validate_with_index(self):
         """ Validates with index number, not with menu contents. """
         # condition is in well defined order, just so I always know
-        if self.response.replace(" ", "").isdigit() and len(self.response.split()) > 1:
+        if CleanInput.is_numeric(self.response.replace(" ", "")) and len(self.response.split()) > 1:
             print(self.rand_msg("whitespace error"))
             return None
-        elif not self.response.isdigit():
+        elif not CleanInput.is_numeric(self.response):
             print(self.rand_msg("non-numeric error"))
             return None
-        elif int(self.response) not in range(len(self.menu)):
-            print(self.rand_msg("out-of-range error"))
+        elif int(float(self.response)) not in range(len(self.menu)):
+            print(self.rand_msg("no-match error"))
             return None
         else:
             print(self.rand_msg("success msg"))
-            return self.menu[int(self.response)]
+            return self.menu[int(float(self.response))]
+    def split_validation_with_index(self):
+        """ Returns the mutual parts for split inputs and menu index. """
+        menu_range = Menu.list_items_as_strings(list(range(len(self.menu))))
+        input_range = Menu.list_items_as_strings(self.response)
+        return list(set(input_range).intersection(set(menu_range)))
     def validate_with_values(self):
         """ Validates with listed values. """
         # condition is in well defined order, just so I always know
@@ -66,6 +73,9 @@ class Menu():
         else:
             print(self.rand_msg("success msg"))
             return self.response
+    # helper instance method
+    def return_as_list(self):
+        return self.menu
     # static helper method are here since it's logically related
     @staticmethod
     def list_items_as_strings(lst: list) -> list[str]:
@@ -77,6 +87,16 @@ class Menu():
             else:
                 string_lst.append(str(value).strip())
         return string_lst
+    @staticmethod
+    def list_items_as_int(lst: list) -> list[int]:
+        """ Converts list items to strings. """
+        int_lst = []
+        for value in lst:
+            if CleanInput.is_numeric(value):
+                int_lst.append(int(float(str(value).strip())))
+            else:
+                int_lst.append(-1)
+        return int_lst
     @staticmethod
     def rand_msg(msg_variant: str) -> str:
         """ I'm just bored. """
@@ -154,22 +174,26 @@ class Menu():
 
 
 if __name__ == "__main__":
-    main_or_sub = ["Make sure to read the dataframe first",
-                   "Search for related columns based on keyword",
-                   "Check for unique column variables of a specific column",
-                   "Crash Severity Report",
-                   "all years: Crash Severity Report", 
-                   "Crash Reports Over Time Graph",
-                   "Vehicle Types and Crash Severity Graphing",
-                   "Cross-Sectional Sampling",
-                   "Sampling Based On Interpretation",
-                   "Exit"]
-    valid_selection = Menu(main_or_sub).display_with_index().general_prompt().validate_with_index()
-    print(f"you have chosen {valid_selection}")
-    print()
-    numeric_lst = [70.0, 100.0, 50.0, 80.0, 60.0, 30.0, 20.0, 40.0, 
-                   10.0, 90.0, float('nan'), 110.0, 15.0, 5.0, 61.0, 
-                   6.0, 51.0, 2.0]
-    valid_numeric_selection = Menu(numeric_lst).display_with_values().general_prompt().validate_with_values()
-    print(f"you have chosen {valid_numeric_selection}")
+    # main_or_sub = ["Make sure to read the dataframe first",
+    #                "Search for related columns based on keyword",
+    #                "Check for unique column variables of a specific column",
+    #                "Crash Severity Report",
+    #                "all years: Crash Severity Report", 
+    #                "Crash Reports Over Time Graph",
+    #                "Vehicle Types and Crash Severity Graphing",
+    #                "Cross-Sectional Sampling",
+    #                "Sampling Based On Interpretation",
+    #                "Exit"]
+    # valid_selection = Menu(main_or_sub).display_with_index().split_prompt().split_validation_with_index()
+    # valid_selection = Menu(main_or_sub).display_with_index().general_prompt().validate_with_index()
+    # print(f"you have chosen {valid_selection}")
+    # print()
+    # numeric_lst = [70.0, 100.0, 50.0, 80.0, 60.0, 30.0, 20.0, 40.0, 
+    #                10.0, 90.0, float('nan'), 110.0, 15.0, 5.0, 61.0, 
+    #                6.0, 51.0, 2.0]
+    numeric_str_lst = ["70.0", "100.0", "50", " ", "", "05"]
+    int_lst= Menu.list_items_as_int(numeric_str_lst)
+    print(int_lst)
+    # valid_numeric_selection = Menu(numeric_lst).display_with_values().general_prompt().validate_with_values()
+    # print(f"you have chosen {valid_numeric_selection}")
     print()
