@@ -33,8 +33,8 @@ def general_validation_loop(validation_func: callable) -> str:
     return valid_selection
 
 
-def main_menu_validation():
-    """ Simplifies a chain OOP process as a simple function for looping. """
+def main_menu_validation_trial() -> str:
+    """ Returns a potential menu selection for looping after a chained function process. """
     main_menu = ["Exit", "Crash Severity Report", "Crash Reports Over Time Graph"]
     return Menu(main_menu).display_with_index().general_prompt().validate_with_index()
 
@@ -48,7 +48,7 @@ def main():
     terminate = None
     while terminate != True:
         # menu selection validation
-        menu_selection = general_validation_loop(main_menu_validation)
+        menu_selection = general_validation_loop(main_menu_validation_trial)
         # match choice scenarios
         match menu_selection:
             case "Exit":
