@@ -4,19 +4,11 @@ visualize data for ill-specified, complex data-science problems.
    Date: Fri Mar 21 21:06:21 2025
 """
 
-import pandas as pd
 from crash_specific_module import core_crash_severity_data, crash_severity_report, plot_crash_trends
 from menu_module import Menu
-from config_module import DATA_FILE
+from config_module import CRASH_CSV
+from online_update_module import df_loaded_with_auto_update
 
-
-
-def df_loaded_from_file(filename: str) -> pd.DataFrame:
-    """Loads a CSV file into a pandas DataFrame."""
-    print("Now loading ...\n...")
-    ready_df = pd.read_csv(filename)
-    print("Dataframe has been successfully loaded!")
-    return ready_df
 
 
 def end_of_application() -> bool:
@@ -42,7 +34,8 @@ def main_menu_validation_trial() -> str:
 def main():
     """ Generates reports and graphs based on crash data. """
     # load df
-    raw_df = df_loaded_from_file(DATA_FILE)
+    raw_df = df_loaded_with_auto_update(CRASH_CSV)
+    # raw_df = df_loaded_from_url(crash_url)
     crash_severity_core_df = core_crash_severity_data(raw_df)
     # main menu loop
     terminate = None
@@ -57,8 +50,8 @@ def main():
                 crash_report = crash_severity_report(crash_severity_core_df)
                 print(crash_report)
             case "Crash Reports Over Time Graph":
-                report_as_plot = crash_severity_report(crash_severity_core_df)
-                plot_crash_trends(report_as_plot)
+                report_for_plot = crash_severity_report(crash_severity_core_df)
+                plot_crash_trends(report_for_plot)
 
 
 

@@ -17,6 +17,13 @@ import pandas as pd
 # path directory for git commit
 DATA_FILE = "data/Crash_Analysis_System_(CAS)_data.csv"
 
+# crash data, url for geopandas use, X and Y as geo index
+COMMON_URL_PART = r"https://services.arcgis.com/CXBb7LAjgIIdcsPt/arcgis/rest/services/CAS_Data_Public/FeatureServer/0"
+CRASH_CSV = r"Crash_Analysis_System_(CAS)_data.csv"
+
+
+
+
 # DIVIDER visually divides the IDE
 DIVIDER = "-" * 65
 
