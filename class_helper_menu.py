@@ -5,8 +5,8 @@
 
 import pandas as pd_menu
 import random as rd_menu
-from clean_input_module import CleanInput
-from config_module import DIVIDER
+from class_helper_clean_input import CleanInput
+from config_global import DIVIDER
 
 
 class Menu():

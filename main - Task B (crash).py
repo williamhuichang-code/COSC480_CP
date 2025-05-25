@@ -4,10 +4,9 @@ visualize data for ill-specified, complex data-science problems.
    Date: Fri Mar 21 21:06:21 2025
 """
 
-from crash_specific_module import core_crash_severity_data, crash_severity_report, plot_crash_trends
-from menu_module import Menu
-from config_module import CRASH_CSV
-from online_update_module import df_loaded_with_auto_update
+from module_crashdf_features import core_crash_severity_data, crash_severity_report, plot_crash_trends
+from class_helper_menu import Menu
+from subclass_crashdf import CrashDf
 
 
 
@@ -34,7 +33,7 @@ def main_menu_validation_trial() -> str:
 def main():
     """ Generates reports and graphs based on crash data. """
     # load df
-    raw_df = df_loaded_with_auto_update(CRASH_CSV)
+    raw_df = CrashDf.df_loaded_with_online_update(CrashDf._crash_csv_name).cleaned_crashdf_by_nz_bounds()
     # raw_df = df_loaded_from_url(crash_url)
     crash_severity_core_df = core_crash_severity_data(raw_df)
     # main menu loop

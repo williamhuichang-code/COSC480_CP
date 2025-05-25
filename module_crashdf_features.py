@@ -5,8 +5,8 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
-from config_module import DATA_FILE, df_loaded_from_file
-from menu_module import Menu
+from config_global import DATA_FILE, df_loaded_from_file
+from class_helper_menu import Menu
 
 
 ###### part 2 features consideration ######
