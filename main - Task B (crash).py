@@ -4,10 +4,12 @@ visualize data for ill-specified, complex data-science problems.
    Date: Fri Mar 21 21:06:21 2025
 """
 
-from module_crashdf_features import core_crash_severity_data, crash_severity_report, plot_crash_trends
+
 from class_helper_menu import Menu
 from subclass_crashdf import CrashDf
-
+from module_crashdf_features import core_crash_severity_data, crash_severity_report, plot_crash_trends
+from module_crashdf_features import core_crash_heatmap_data, plot_crash_heatmap, plot_crash_pinmap, plot_crash_cluster_map
+from module_helper import print_divider, pause
 
 
 def end_of_application() -> bool:
@@ -26,16 +28,21 @@ def general_validation_loop(validation_func: callable) -> str:
 
 def main_menu_validation_trial() -> str:
     """ Returns a potential menu selection for looping after a chained function process. """
-    main_menu = ["Exit", "Crash Severity Report", "Crash Reports Over Time Graph"]
+    main_menu = ["Exit", 
+                 "Crash Severity Report", 
+                 "Crash Reports Over Time Graph", 
+                 "Fatal Crash Heatmap", 
+                 "Exploratory Crash Pinmap", 
+                 "Exploratory Crash Clustermap"]
     return Menu(main_menu).display_with_index().general_prompt().validate_with_index()
 
 
 def main():
     """ Generates reports and graphs based on crash data. """
     # load df
-    raw_df = CrashDf.df_loaded_with_online_update(CrashDf._crash_csv_name).cleaned_crashdf_by_nz_bounds()
-    # raw_df = df_loaded_from_url(crash_url)
-    crash_severity_core_df = core_crash_severity_data(raw_df)
+    initialized_raw_df = CrashDf.df_loaded_with_online_update(CrashDf._crash_csv_name)
+    crash_severity_core_df = core_crash_severity_data(initialized_raw_df)
+    core_hm_df = core_crash_heatmap_data(initialized_raw_df)
     # main menu loop
     terminate = None
     while terminate != True:
@@ -51,6 +58,21 @@ def main():
             case "Crash Reports Over Time Graph":
                 report_for_plot = crash_severity_report(crash_severity_core_df)
                 plot_crash_trends(report_for_plot)
+            case "Fatal Crash Heatmap":
+                print_divider()
+                print("Just showing fatal crashes for now — it helps keep things light on memory!")
+                pause()
+                plot_crash_heatmap(core_hm_df[core_hm_df['crashSeverity'] == 'Fatal Crash'])
+            case "Exploratory Crash Pinmap":
+                print_divider()
+                print("Only fatal and serious crashes are shown, limited to the most recent 10,000 entries to reduce memory load.")
+                pause()
+                plot_crash_pinmap(core_hm_df.tail(10000))
+            case "Exploratory Crash Clustermap":
+                print_divider()
+                print("Limited to the most recent 5,000 entries to reduce memory load.")
+                pause()
+                plot_crash_cluster_map(core_hm_df.tail(5000))
 
 
 

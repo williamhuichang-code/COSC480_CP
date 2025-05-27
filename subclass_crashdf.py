@@ -7,13 +7,18 @@ import pandas as pd_crash
 import numpy as np_crash
 import requests as requests_crash
 from module_helper import pause, print_divider
-
+# these two are for map testing
+import folium
+import webbrowser
+# import geopandas as gpd
+# from shapely.geometry import Point
+from folium.plugins import HeatMapWithTime
 
 
 class CrashDf(DSDf):
    """
     A crash df subclass that inherits from DSDf, and
-   can operate itself, update itself, wrangle itself etc. 
+   can operate itself, enrich itself, wrangle itself etc. 
    """
    # class constants
    # local crash file name for git launching and local testing
@@ -72,32 +77,37 @@ class CrashDf(DSDf):
       ### step 1, make requests until new entries are exhausted
       df_for_new_entries = pd_crash.DataFrame()
       if max_local_pk < maxpk_online:
-         print("Heads up! Fresh data is available from the Crash Source — let’s grab them ...")
+         print("[Data Enriching] (automatic) Now heads up! Fresh data is available from the Crash Data Source — let’s grab them ...")
+         pause()
+         print("Note: New updated entries will be loaded into the session, but won't be saved locally")
+         print("      — this way, the update process can be demonstrated each time when loading the project.")
          print_divider()
          pause()
-      print(f"... loading new entries..., {CrashDf._crash_pk} progress: {max_local_pk}/{maxpk_online}.")
+      print(f"... requesting new entries..., {CrashDf._crash_pk} progress: {max_local_pk}/{maxpk_online}.")
+      pause()
       while max_local_pk < maxpk_online:
          _df_of_n_entries_per_request = self._df_of_n_entries_per_request(max_local_pk)
          df_for_new_entries = pd_crash.concat([df_for_new_entries, _df_of_n_entries_per_request], axis=0)
          n_collected = df_for_new_entries.shape[0]
          max_local_pk = df_for_new_entries[CrashDf._crash_pk].max()
          print(f"{n_collected} new entries collected, {CrashDf._crash_pk} progress: {max_local_pk}/{maxpk_online}.")
+      # step 2, gets the df with new entries
       print_divider()
-      # step 2, returns the df of new entries
       print("You're all caught up — nothing new to fetch!")
-      print("(New updated entries will be loaded into the session, but won't be saved locally")
-      print(" — this way, the update process can be demonstrated each time when loading the project.)")
-      pause()
       return CrashDf(df_for_new_entries)
    def _df_with_effective_speed(self) -> pd_crash.DataFrame:
       """ Return new crash df with effective speed limit. """
+      print_divider()
+      print("[Data Enriching] (automatic) New columns effectiveSpeedLimit added the crash dataset, ")
+      print("which prioritizes temporarySpeedLimit and uses speedLimit as a fallback. ")
+      pause()
       self = self.assign(effectiveSpeedLimit = 
             lambda df: df['temporarySpeedLimit'].combine_first(df['speedLimit']))
       return self
    def cleaned_crashdf_by_nz_bounds(self) -> pd_crash.DataFrame:
       """ Sifts through the data to keep only crashes within NZ's meter-based bounds. """
       print_divider()
-      print("Now wrangling those weird geometry entries in the dataset...\nHang tight, almost there ...\n...")
+      print("[Data Wrangling] Now cleaning those weird geometry entries in the dataset...\nHang tight, almost there ...\n...")
       pause()
       # nrows before cleaning
       nrow_before = self.shape[0]
@@ -147,8 +157,11 @@ class CrashDf(DSDf):
          local_df = CrashDf(pd_crash.read_csv(pathed_csv))
          requested_df = local_df._df_from_online_requests()
          ### step 2, concat and return
-         concated_df = pd_crash.concat([local_df, requested_df], axis=0).reset_index(drop=True)
-         return concated_df
+         df_enriched_with_update = pd_crash.concat([local_df, requested_df], axis=0).reset_index(drop=True)
+         # effective speed implemented as a new column for the crash dataset by default
+         df_enriched_with_effective_speed = CrashDf(df_enriched_with_update)._df_with_effective_speed()
+         df_enriched_with_lon_lat = df_enriched_with_effective_speed._xy_mutate_lonlat()
+         return df_enriched_with_lon_lat
       except FileNotFoundError:
          print("\nLoading/Updating Request Refused:")
          print(f"    '{local_csv_name}' was not found in the expected path.\n")
@@ -160,17 +173,72 @@ class CrashDf(DSDf):
 
 
 if __name__ == "__main__":
-   # updated_crash_df = CrashDf.local_df_loaded_with_filename(CrashDf._crash_csv_name)
-   updated_crash_df = CrashDf.df_loaded_with_online_update(CrashDf._crash_csv_name)
+   df = CrashDf.df_loaded_with_online_update(CrashDf._crash_csv_name).cleaned_crashdf_by_nz_bounds()
+   df = df[df['crashSeverity'] == 'Fatal Crash']
+   print_divider()
+   print(df)
+   # chang df into gdf for geo markers
+   # geometry = [Point(xy) for xy in zip(df["lon"], df["lat"])]
+   # gdf = gpd.GeoDataFrame(df, geometry=geometry, crs="EPSG:4326")
+   
+   # lat_mbound and lon_mbound decide where the map start to show
+   lat_mbound = (df['lat'].max() + df['lat'].min())/2
+   lon_mbound = (df['lon'].max() + df['lon'].min())/2
+
+   # maps
+   # tiles="OpenStreetMap" for daytime
+   # tiles="Cartodb dark matter" for night
+   # zoom_start=12 for city, 6 for country
+   m = folium.Map(location=[lat_mbound, lon_mbound], 
+               zoom_start=6,
+               tiles="OpenStreetMap") 
+   # timed_heatmap step 1: Prepare heatmap data grouped by year
+   years = sorted(df['crashYear'].dropna().unique())
+   heat_data = [
+      df[df['crashYear'] == year][['lat', 'lon']].dropna().values.tolist()
+      for year in years
+   ]
+   # timed_heatmap step 2: generate time index (just use year labels)
+   time_index = [str(year) for year in years]
+
+   # timed_heatmap Step 3: Create animated heatmap
+   HeatMapWithTime(
+      data=heat_data,
+      index=time_index,
+      auto_play=True,
+      max_opacity=0.6,
+      radius=10
+   ).add_to(m)
+
+   # folium.GeoJson(
+   #    gdf, 
+   #    name = "crashSerity",
+   #    marker=folium.Circle(radius=20, fill_color="orange", fill_opacity=0.4, color="black", weight=1),
+   #    zoom_on_click=True,
+   # ).add_to(m)
+
+
+   # # markers
+   # for _, row in df.iterrows():
+   #    folium.Marker(
+   #       location=[row['lat'], row['lon']],
+   #       popup=row['OBJECTID'],
+   #       icon=folium.Icon(color='red')
+   #       ).add_to(m)
+
+   # show map
+   m.save(r"D:\DS\Py code\crash_map_testing_1.html")
+   webbrowser.open_new_tab(r"D:\DS\Py code\crash_map_testing_1.html")
+
    # updated_crash_df = updated_crash_df.cleaned_crashdf_by_nz_bounds()
    # updated_crash_df = updated_crash_df._df_with_effective_speed()
-   print_divider()
-   print(updated_crash_df.tail())
-   print_divider()
+   
+   # print(updated_crash_df["crashYear"].unique())
+   # print(type(updated_crash_df))
+   
    # print(type(updated_crash_df))
    # print(updated_crash_df.tail())
 
-   print()
    
    # max_local_pk_number = classed_local_crash_df.maxpk_existed
    # print(max_local_pk_number)

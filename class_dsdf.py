@@ -4,12 +4,12 @@
 """
 import pandas as pd
 from pyproj import CRS, Transformer
-from module_helper import print_divider
+from module_helper import print_divider, pause
 
 class DSDf(pd.DataFrame):
     """ 
     A data science df class that can operate itself, 
-    like update itself, wrangle itself etc. 
+    like enrich itself, wrangle itself etc. 
     """
     # preserve my custom class type after manipulations
     @property
@@ -20,9 +20,66 @@ class DSDf(pd.DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     # instances method
-    def test_df_head(self):
-        """ Test with df.head. """
-        print(self.head())
+    def _xy_mutate_lonlat(self, x_col: str = 'X', y_col: str = 'Y') -> pd.DataFrame:
+        """ A data science dataframe can 
+        transforms meter-based X and Y coordinates (e.g., EPSG:2193) 
+        into geographic coordinates (longitude, latitude) using CRS conversion. 
+        """
+        print_divider()
+        print("[Data Enriching] (automatic) New columns 'lon', 'lat' mutated from 'X', 'Y' and added to the crash dataset.")
+        pause()
+        transformer = Transformer.from_crs("EPSG:2193", "EPSG:4326", always_xy=True)
+        x_vals = self[x_col].values
+        y_vals = self[y_col].values
+        lon_vals, lat_vals = transformer.transform(x_vals, y_vals)
+        self['lon'] = lon_vals
+        self['lat'] = lat_vals
+        return self
+    
+    def divider_in_chain(self):
+        """ Prints a divider in class method chain. """
+        print_divider()
+        return self
+    def pause_in_chain(self):
+        """ Supports pause in class method chain. """
+        pause()
+        return self
+    
+    def print_in_chain(self):
+        """ Supports print ds df itself in class method chain. """
+        print_divider()
+        print(self)
+        return self
+
+    def print_columns_in_chain(self):
+        """ Supports print columns in class method chain. """
+        print_divider()
+        print(self.columns)
+        return self
+
+    def print_type_in_chain(self):
+        """ Supports print type in class method chain. """
+        print_divider()
+        print(type(self))
+        return self
+    
+    def print_head_in_chain(self,n=5):
+        """ Supports print head in class method chain. """
+        print_divider()
+        print(self.head(n))
+        return self
+
+    def print_tail_in_chain(self,n=5):
+        """ Supports print head in class method chain. """
+        print_divider()
+        print(self.tail(n))
+        return self
+    
+    def general_bug_test(self):
+        """ bug test purpose """
+        self.print_columns_in_chain().print_type_in_chain().print_tail_in_chain()
+        return self
+    
     # class method
 
     # static method
