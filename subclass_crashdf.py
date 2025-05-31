@@ -2,16 +2,14 @@
    Author: William Hui Chang
    Date: Sat May 24 09:59:08 2025
 """
+
 from class_dsdf import DSDf
 import pandas as pd_crash
 import numpy as np_crash
 import requests as requests_crash
 from module_helper import pause, print_divider
-# these two are for map testing
 import folium
 import webbrowser
-# import geopandas as gpd
-# from shapely.geometry import Point
 from folium.plugins import HeatMapWithTime
 
 
@@ -73,7 +71,7 @@ class CrashDf(DSDf):
       print_divider()
       ### step 0, max local pk from local file and online pk from url, for comparison
       max_local_pk = self._local_maxpk()
-      maxpk_online = self._df_of_n_entries_per_request(max_local_pk, nrows=1, sorting = "desc").loc[0,CrashDf._crash_pk]
+      maxpk_online = self._df_of_n_entries_per_request(max_local_pk, nrows=1, sorting="desc").loc[0,CrashDf._crash_pk]
       ### step 1, make requests until new entries are exhausted
       df_for_new_entries = pd_crash.DataFrame()
       if max_local_pk < maxpk_online:

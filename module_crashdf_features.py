@@ -8,10 +8,11 @@ import matplotlib.pyplot as plt
 from class_helper_menu import Menu
 from subclass_crashdf import CrashDf
 import folium
-from folium.plugins import HeatMapWithTime, Geocoder, MarkerCluster, BeautifyIcon
+from folium.plugins import HeatMapWithTime, MarkerCluster, BeautifyIcon
 import webbrowser
 import os
 import urllib.parse
+
 
 ###### part 2 features consideration ######
 # feature 2, crash report prioritizing temporarySpeedLimit, and using speedLimit as fallback
@@ -135,8 +136,6 @@ def core_crash_heatmap_data(initialized_df: pd.DataFrame) -> pd.DataFrame:
    return CrashDf(core_heatmap_df)
 
 
-
-
 def auto_save_open(map, savename:str):
    """ Leverage os and webbrowser to save and open html file using different system. """
    # relative path
@@ -162,7 +161,7 @@ def map_background(core_heatmap_df: pd.DataFrame):
 
 ### timed_heatmap feature
 def plot_crash_heatmap(core_heatmap_df: pd.DataFrame):
-   """ bla """
+   """ Plots a kernel density crash heatmap feature with auto yearly demonstration. """
    # timed_heatmap step 1: prepare map background
    m = map_background(core_heatmap_df)
    # timed_heatmap step 2: prepare heatmap data grouped by year
@@ -171,9 +170,9 @@ def plot_crash_heatmap(core_heatmap_df: pd.DataFrame):
       core_heatmap_df[core_heatmap_df['crashYear'] == year][['lat', 'lon']].dropna().values.tolist()
       for year in years
    ]
-   # timed_heatmap step 2: generate time index (just use year labels)
+   # timed_heatmap step 3: generate time index (just use year labels)
    time_index = [str(year) for year in years]
-   # timed_heatmap Step 3: Create animated heatmap
+   # timed_heatmap Step 4: create animated heatmap
    HeatMapWithTime(
       data=heat_data,
       index=time_index,
@@ -200,7 +199,7 @@ def dualmap_background(core_heatmap_df: pd.DataFrame):
 
 ### pin map feature
 def plot_crash_pinmap(core_heatmap_df: pd.DataFrame, severity_of_interest=['Serious Crash', 'Fatal Crash']):
-   """ bla """
+   """ Plots crash pinmap using folium dual map feature group methods. """
    # limit pin map to serious and fatal to save memory
    core_heatmap_df = core_heatmap_df[core_heatmap_df['crashSeverity'].isin(severity_of_interest)]
    #create a dualmap background to compare dark theme and bright theme
@@ -255,7 +254,7 @@ def plot_crash_pinmap(core_heatmap_df: pd.DataFrame, severity_of_interest=['Seri
 
 ### cluster map feature
 def plot_crash_cluster_map(core_heatmap_df: pd.DataFrame, severity_of_interest=['Non-Injury Crash', 'Minor Crash', 'Serious Crash', 'Fatal Crash']):
-   """ bla """
+   """ Plots crash clustermap using folium cluster marker methods. """
    # limit pin map to serious and fatal to save memory
    core_heatmap_df = core_heatmap_df[core_heatmap_df['crashSeverity'].isin(severity_of_interest)]
    #create a dualmap background to compare dark theme and bright theme

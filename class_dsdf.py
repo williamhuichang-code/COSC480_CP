@@ -1,10 +1,13 @@
-"""This module is designed for a super class DSdf, means Data Science dataframe.
+"""This module is designed for a super class DSDf, means Data Science dataframe.
+   The DSDf class inherit from pandas dataframe, and controls features for its subclass, CrashDf, ..., etc.
    Author: William Hui Chang
    Date: Sat May 24 09:59:08 2025
 """
+
 import pandas as pd
 from pyproj import CRS, Transformer
 from module_helper import print_divider, pause
+
 
 class DSDf(pd.DataFrame):
     """ 
