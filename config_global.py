@@ -12,10 +12,10 @@ import pandas as pd
 # DATA_FILE = r"D:\DS\Py code\Crash_Analysis_System_(CAS)_data_shorten.csv"
 
 # full data for testing on my own PC
-# DATA_FILE = r"D:\DS\Py code\Crash_Analysis_System_(CAS)_data.csv"
+DATA_FILE = r"D:\Data4Code\Crash_Analysis_System_(CAS)_data.csv"
 
 # path directory for git commit
-DATA_FILE = "data/Crash_Analysis_System_(CAS)_data.csv"
+# DATA_FILE = "data/Crash_Analysis_System_(CAS)_data.csv"
 
 # crash data, url for geopandas use, X and Y as geo index
 COMMON_URL_PART = r"https://services.arcgis.com/CXBb7LAjgIIdcsPt/arcgis/rest/services/CAS_Data_Public/FeatureServer/0"

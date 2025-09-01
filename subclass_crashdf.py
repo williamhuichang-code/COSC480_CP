@@ -134,8 +134,8 @@ class CrashDf(DSDf):
       print_divider()
       print("Now loading ...\n...")
       ### step 0, local parameters
-      # pathed_csv = f"D:/Data4Code/{local_csv_name}"  # for local testing
-      pathed_csv = f"data/{local_csv_name}"  # for git lauching
+      pathed_csv = f"D:/Data4Code/{local_csv_name}"  # for local testing
+      # pathed_csv = f"data/{local_csv_name}"  # for git lauching
       local_raw_df = pd_crash.read_csv(pathed_csv)
       local_df_classed_with_ds = CrashDf(local_raw_df)
       print(f"Dataframe {local_csv_name} has been successfully loaded!")
@@ -147,8 +147,8 @@ class CrashDf(DSDf):
       print_divider()
       print("Now loading ...\n...")
       ### step 0, local parameters
-      # pathed_csv = f"D:/Data4Code/{local_csv_name}"  # for local testing
-      pathed_csv = f"data/{local_csv_name}"  # for git lauching
+      pathed_csv = f"D:/Data4Code/{local_csv_name}"  # for local testing
+      # pathed_csv = f"data/{local_csv_name}"  # for git lauching
       ### refuse to update if local csv file not initialized
       try:
          ### step 1, load local df and get requested_df from online API
