@@ -1,1 +1,2 @@
 -e "data/\n*.csv\n*.parquet\n*.zip\n*.db\n" 
+-e "data/\n*.csv\n*.parquet\n*.zip\n*.db\n" 
