@@ -49,30 +49,29 @@ def main():
         # menu selection validation
         menu_selection = general_validation_loop(main_menu_validation_trial)
         # match choice scenarios
-        match menu_selection:
-            case "Exit":
-                terminate = end_of_application()
-            case "Crash Severity Report":
-                crash_report = crash_severity_report(crash_severity_core_df)
-                print(crash_report)
-            case "Crash Reports Over Time Graph":
-                report_for_plot = crash_severity_report(crash_severity_core_df)
-                plot_crash_trends(report_for_plot)
-            case "Fatal Crash Heatmap":
-                print_divider()
-                print("Just showing fatal crashes for now — it helps keep things light on memory!")
-                pause()
-                plot_crash_heatmap(core_hm_df[core_hm_df['crashSeverity'] == 'Fatal Crash'])
-            case "Exploratory Crash Pinmap":
-                print_divider()
-                print("Only fatal and serious crashes are shown, limited to the most recent 10,000 entries to reduce memory load.")
-                pause()
-                plot_crash_pinmap(core_hm_df.tail(10000))
-            case "Exploratory Crash Clustermap":
-                print_divider()
-                print("Limited to the most recent 5,000 entries to reduce memory load.")
-                pause()
-                plot_crash_cluster_map(core_hm_df.tail(5000))
+        if menu_selection == "Exit":
+            terminate = end_of_application()
+        elif menu_selection == "Crash Severity Report":
+            crash_report = crash_severity_report(crash_severity_core_df)
+            print(crash_report)
+        elif menu_selection == "Crash Reports Over Time Graph":
+            report_for_plot = crash_severity_report(crash_severity_core_df)
+            plot_crash_trends(report_for_plot)
+        elif menu_selection == "Fatal Crash Heatmap":
+            print_divider()
+            print("Just showing fatal crashes for now — it helps keep things light on memory!")
+            pause()
+            plot_crash_heatmap(core_hm_df[core_hm_df['crashSeverity'] == 'Fatal Crash'])
+        elif menu_selection == "Exploratory Crash Pinmap":
+            print_divider()
+            print("Only fatal and serious crashes are shown, limited to the most recent 10,000 entries to reduce memory load.")
+            pause()
+            plot_crash_pinmap(core_hm_df.tail(10000))
+        elif menu_selection == "Exploratory Crash Clustermap":
+            print_divider()
+            print("Limited to the most recent 5,000 entries to reduce memory load.")
+            pause()
+            plot_crash_cluster_map(core_hm_df.tail(5000))
 
 
 
