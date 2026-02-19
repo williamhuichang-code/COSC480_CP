@@ -10,3 +10,7 @@ dists = np.array([10.0, 25.0, 40.0])   # km to stations
 vals  = np.array([1200, 1500, 900])    # rainfall
 estimate = idw(dists, vals)
 print(estimate)
+
+
+
+## test for adding random rows to commit
